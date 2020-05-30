@@ -7,7 +7,7 @@ const app = express();
 const errorController = require("./controllers/error")
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
- 
+// const db = require("./util/database") 
 // app.engine(
 //     'hbs',
 //     expressHbs({
@@ -16,6 +16,11 @@ const shopRoutes = require('./routes/shop');
 //       extname: 'hbs'
 //     })
 //   );
+// db.execute("SELECT * FROM products").then((result)=>{
+//     console.log(result)
+// }).catch((err)=>{
+//     console.log(err)
+// })
 app.set("view engine","ejs")
 app.set("views","views")
 app.use(bodyParser.urlencoded({extended: false}));
