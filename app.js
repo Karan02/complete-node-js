@@ -22,7 +22,7 @@ const shopRoutes = require('./routes/shop');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-
+// this code runs many times
 app.use((req, res, next) => {
   User.findByPk(1)
     .then(user => {
@@ -38,15 +38,17 @@ app.use(shopRoutes);
 app.use(errorController.get404);
 
 Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+//has many is for one to many relations
 User.hasMany(Product);
 User.hasOne(Cart);
 Cart.belongsTo(User);
 Cart.belongsToMany(Product, { through: CartItem });
+//belongs to many is used for many to many relations
 Product.belongsToMany(Cart, { through: CartItem });
 Order.belongsTo(User);
 User.hasMany(Order);
 Order.belongsToMany(Product, { through: OrderItem });
-
+// below code runs only once
 sequelize
   // .sync({ force: true })
   .sync()
