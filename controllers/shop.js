@@ -141,6 +141,7 @@ exports.postOrder = (req, res, next) => {
         .catch(err => console.log(err));
     })
     .then(result => {
+      // empty the cart
       return fetchedCart.setProducts(null);
     })
     .then(result => {
