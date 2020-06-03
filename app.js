@@ -2,9 +2,9 @@ const path = require('path');
 const getDb = require("./util/database").getDb
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const mongoose = require("mongoose")
 const errorController = require('./controllers/error');
-const mongoConnect = require("./util/database").mongoConnect
+// const mongoConnect = require("./util/database").mongoConnect
 // const sequelize = require('./util/database');
 // const Product = require('./models/product');
 // const User = require('./models/user');
@@ -25,10 +25,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 // this code runs many times
 app.use((req, res, next) => { 
-  User.findAll()
+  User.findById("5ed7cc1b7b4c2702d867b8f4")
     .then(user => {
       // console.log("user",user)
-      req.user = new User(user[0].name,user[0].email,user[0].cart,user[0]._id);
+      req.user = user
       next()
     })
     .catch(err => console.log(err));
@@ -74,8 +74,27 @@ app.use(errorController.get404);
 //   .catch(err => {
 //     console.log(err);
 //   });
-mongoConnect(() => {
+// mongoConnect(() => {
    
-  app.listen(3000);
+//   app.listen(3000);
+//   console.log("Listening on port 3000");
+// })
+mongoose.connect("mongodb://localhost:27017/localhost").then((result)=>{
+User.findOne().then(user=>{
+if(!user){
+  const user =  User.create({
+    name:"Max",
+    email:"ken@gmail.com",
+    cart:{
+      items:[]
+    }
+  })
+}
+})  
+
+app.listen(3000)
   console.log("Listening on port 3000");
+
+}).catch((err)=>{
+  console.log(err)
 })
