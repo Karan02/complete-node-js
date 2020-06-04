@@ -128,17 +128,19 @@ exports.postOrder = (req, res, next) => {
   .then(user => {
   const products = user.cart.items.map(i=>{
     //only doc data comes not extra meta data
-    return {quantity:i.quantity,product:{...i.productId._doc}}
+    console.log("i.productId._doc",i.productId._doc)
+    return {quantity:i.quantity,productData:{...i.productId._doc}}
   })
-  const order = new Order({
+  // console.log(" products",products)
+  const order =  Order.create({
     user:{
       name:req.user.name,
       // mongoose will pick the id
-      userId:req.user
+      userId:req.user._id
     },
     products: products
   })
-  order.save()
+  // order.save()
   })
  
 
