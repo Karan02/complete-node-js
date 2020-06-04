@@ -10,7 +10,7 @@ let _db
 const mongodb = require("mongodb")
 const MongoClient = mongodb.MongoClient
 const mongoConnect = (callback) => {
-  MongoClient.connect("mongodb://localhost:27017/localhost").then(result =>{
+  MongoClient.connect("mongodb://127.0.0.1:27017/localhost").then(result =>{
     console.log("connected")
     _db = result.db()
     callback(result)
