@@ -1,7 +1,19 @@
 const bcrypt = require('bcryptjs');
-
+const nodemailer=  require("nodemailer")
 const User = require('../models/user');
-
+ 
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user:"krnptl1234@gmail.com",
+    pass: "goog2goog"
+  },
+  secure: false,//true
+  port: 25,//465
+  tls: {
+    rejectUnauthorized: false
+  }
+})
 exports.getLogin = (req, res, next) => {
   let message = req.flash('error')
   if(message.length > 0){
@@ -70,7 +82,7 @@ exports.postSignup = (req, res, next) => {
   User.findOne({ email: email })
     .then(userDoc => {
       if (userDoc) {
-
+        //  after using flash, it removes message from flash
         req.flash('error', 'Email exist already');
 
         return res.redirect('/signup');
@@ -85,13 +97,43 @@ exports.postSignup = (req, res, next) => {
           });
           return user.save();
         })
-        .then(result => {
-          res.redirect('/login');
-        });
-    })
+      })
+        .then(()=>{
+          
+           
+        
+          const mailOptions = {
+            from: "krnptl1234@gmail.com",
+            to: "0002karan@gmail.com",
+            subject: 'Welcome to complete node js course',
+            html: `
+              <body>
+                <p> Hello karan </p>
+                <br/>
+                <p>Thank you for signin up to node js course. Kindly use given credentials for loggin in.</p>
+                <br/>
+                <p>Email Id: krnptl1234@gmail.com </p>
+                <p>Password: not now </p>
+                <br/>
+                <br/>
+                <p>Thank You!</p>
+                <p>Nutrition Team</p>
+              </body>
+            `
+          }
+          
+          transporter.sendMail(mailOptions, (err, info)=>{
+            if(err){
+              console.log('error occured',err);
+              return;
+            }
+        })
+    res.redirect('/login');
+
+      })
     .catch(err => {
       console.log(err);
-    });
+    })
 };
 
 exports.postLogout = (req, res, next) => {
