@@ -53,14 +53,14 @@ app.use((req,res,next)=>{
     .then(user => {
       // req.session.isLoggedIn = true;
       // req.user = user;
-      console.log("ulaa",user)
+      
         req.user = user
       next()
     })
     .catch(err => console.log(err));}
     else{
 
-      console.log("in else")
+       
       next()
     }
 })
