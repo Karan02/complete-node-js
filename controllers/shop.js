@@ -106,7 +106,7 @@ exports.postCart = (req, res, next) => {
       return req.user.addToCart(product);
     })
     .then(result => {
-      console.log(result);
+      // console.log(result);
       res.redirect('/cart');
     })
     .catch(err => {
@@ -138,13 +138,13 @@ exports.getCheckout = (req,res,next) => {
   .populate('cart.items.productId')
   .execPopulate()
   .then(user => {
-    console.log("user",user)
+    console.log("user",user.cart.items)
      products = user.cart.items;
      total = 0
     products.forEach(p=>{
       total+= p.quantity * p.productId.price
     })
-    return stripe.checkout.session.create({
+    return stripe.checkout.sessions.create({
       payment_method_types:["card"],
       line_items: products.map(p =>{
         return {
@@ -169,6 +169,7 @@ exports.getCheckout = (req,res,next) => {
     });
   })
   .catch(err => {
+    console.log(err)
     const error = new Error(err);
     error.httpStatusCode = 500;
     return next(error);
