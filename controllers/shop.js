@@ -155,7 +155,7 @@ exports.getCheckout = (req,res,next) => {
           quantity: p.quantity
         }
       }),
-      success_url:req.protocol + "://" + req.get("host") + '/checkout/success', // => http://localhost:3000
+      success_url:req.protocol + "://" + req.get("host") + '/checkout/success', // => http://localhost:3000/checkout/success
       cancel_url:req.protocol + "://" + req.get("host") + '/checkout/cancel'
     })
    
