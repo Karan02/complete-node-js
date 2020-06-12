@@ -1,7 +1,7 @@
 const express = require("express")
 const app = express()
 const bodyParser = require("body-parser")
-
+const mongoose = require("mongoose")
 const feedRoutes = require("./routes/feed")
 // app.use(bodyParser.urlencoded()) //x-www-forn-urlencoded <form>
 app.use(bodyParser.json()) //application json
@@ -12,5 +12,6 @@ app.use((req,res,next)=>{
     next()
 })
 app.use("/feed",feedRoutes)
+mongoose.connect("mongodb://")
 app.listen(8080)
 
