@@ -1,6 +1,7 @@
 const {validationResult} = require("express-validator/check")
 const Post = require("../models/post")
 exports.getPosts = (req,res,next) => {
+    // imageUrl = req.file.path.replace("\\","/");
     Post.find().then(posts=>{
         res.status(200).json({message:"Fetched posts successfully",posts:posts})
     }).catch(err=>{
@@ -9,27 +10,30 @@ exports.getPosts = (req,res,next) => {
         }
         next(err)
     })
-    res.status(200).json({
-        posts:[{title:"first post",content:"Content",imageUrl:"images/image1.png",creator:{
-            name:"karan"
-        },
-    createdAt:new Date()}]
-    })
+   
 }
 
 exports.createPost = (req,res,next) => {
+    console.log("path",req.file.path)
     const errors = validationResult(req)
     if(!errors.isEmpty()){
         const error = new Error("Validation failed,entered data is incorrect")
         error.statusCode = 422
         throw error
     }
+    if(!req.file){
+       const error = new Error("No Image provided")
+       error.statusCode = 422
+       throw error 
+    }
+    console.log("comes here")
+    const imageUrl = req.file.path.replace("\\" ,"/");
     const title = req.body.title
     const content = req.body.content
     const post = new Post({
         title:title,
         content:content,
-        imageUrl:"images/image1.png",
+        imageUrl:imageUrl,
         creator:{name:"Karan"}
     })
     post.save().then(result=>{
@@ -37,6 +41,7 @@ exports.createPost = (req,res,next) => {
             message:"Post created Successfully",
             post:result})
     }).catch(err=>{
+        console.log("error",err)
         if(!err.statusCode){
             err.statusCode = 500
         }

@@ -22,6 +22,8 @@
     "express": "^4.17.1",
     "express-validator": "^6.5.0",
     "mongoose": "^5.9.18",
-    "nodemon": "^2.0.4"
+    "multer": "^1.0.0",
+    "nodemon": "^2.0.4",
+    "uuidv4": "^6.1.0"
   }
 }
