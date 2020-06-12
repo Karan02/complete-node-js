@@ -14,7 +14,7 @@ exports.getPosts = (req,res,next) => {
 }
 
 exports.createPost = (req,res,next) => {
-    console.log("path",req.file.path)
+   
     const errors = validationResult(req)
     if(!errors.isEmpty()){
         const error = new Error("Validation failed,entered data is incorrect")
@@ -26,7 +26,7 @@ exports.createPost = (req,res,next) => {
        error.statusCode = 422
        throw error 
     }
-    console.log("comes here")
+    
     const imageUrl = req.file.path.replace("\\" ,"/");
     const title = req.body.title
     const content = req.body.content
