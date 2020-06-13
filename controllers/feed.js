@@ -161,7 +161,7 @@ exports.updatePost = async (req, res, next) => {
 exports.getPost = async (req,res,next) =>{
     const postId = req.params.postId
     try{
-    let post = Post.findById(postId) 
+    let post =await Post.findById(postId) 
     if(!post){
             const error = new Error("Could not find post")
             error.statusCode = 404
