@@ -4,6 +4,8 @@ const app = express()
 const bodyParser = require("body-parser")
 const mongoose = require("mongoose")
 const feedRoutes = require("./routes/feed")
+const authRoutes = require("./routes/auth")
+
 const multer = require("multer")
 const { uuid } = require('uuidv4')
 // app.use(bodyParser.urlencoded()) //x-www-forn-urlencoded <form>
@@ -37,15 +39,17 @@ app.use((req,res,next)=>{
     next()
 })
 app.use("/feed",feedRoutes)
+app.use("/auth",authRoutes)
 const config = {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }
 app.use((err,req,res,next)=>{
-    console.log("sdfkljsdflksj",err)
+   
     const status = err.statusCode || 500
     const message = err.message
-    res.status(status).json({message:message})
+    const data = err.data
+    res.status(status).json({message:message,data:data})
 })
 mongoose.connect("mongodb://127.0.0.1:27017/messages",config)
 .then((result)=>{
