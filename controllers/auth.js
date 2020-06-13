@@ -30,39 +30,42 @@ exports.signup = (req,res,next) =>{
 
 }
 
-exports.login = (req,res,next) => {
+exports.login = async (req,res,next) => {
     const email = req.body.email
     const password = req.body.password
     let loadedUser
-    User.findOne({email:email}).then(user=>{
-        if(!user){
+    try{
+    let user = await User.findOne({email:email})
+    // .then(user=>{
+    if(!user){
             const error = new Error("user now found")
             error.statusCode = 401
             throw error
-        }
-        loadedUser = user
-        return bcrypt.compare(password,user.password)
+    }
+    loadedUser = user
+    let isEqual =  bcrypt.compare(password,user.password)
 
-    }).then(isEqual => {
-        console.log("is equal",isEqual)
-        if(!isEqual){
+    // })
+      
+    if(!isEqual){
             const error = new Error("wrong password")
             error.statusCode = 401
             throw error
-        }
-        const token = jwt.sign(
-            {
+    }
+    const token = jwt.sign(
+         {
                 email: loadedUser.email,
                 userId: loadedUser._id.toString()
-              },
+         },
               'somesupersecretsecret',
               { expiresIn: '1h' }
         )
-        res.status(200).json({token:token,userId:loadedUser._id.toString()})
-    }).catch(err=>{
+    res.status(200).json({token:token,userId:loadedUser._id.toString()})
+    }
+    catch(err){
         if(!err.statusCode){
             err.statusCode = 500
         }
         next(err)
-    })
+    }
 }
