@@ -14,7 +14,7 @@ exports.getPosts = (req,res,next) => {
         totalItems = count
         return Post.find().skip((currentPage-1)*perPage).limit(perPage)
     }).then(posts=>{
-        
+        console.log("posts",posts)
         res.status(200).json({message:"Fetched posts successfully",posts:posts,totalItems:totalItems})
     }).catch(err=>{
         if(!err.statusCode){
@@ -26,6 +26,41 @@ exports.getPosts = (req,res,next) => {
    
 }
 
+exports.postStatus = (req,res,next) => {
+    
+    User.findById(req.userId).then(user => {
+        if (!user) {
+            const error = new Error('Could not find user.');
+            error.statusCode = 404;
+            throw error;
+          }
+          console.log("req.body.status",req.body.status)
+        user.status = req.body.status
+        return user.save()  
+    }).then(result=>{
+        res.status(201).json({message:"Status updated"})
+    }).catch(err=>{
+        if(!err.statusCode){
+            err.statusCode = 500
+        }
+        next(err)
+    })
+}
+exports.getStatus = (req,res,next) => {
+    User.findById(req.userId).then(user => {
+        if (!user) {
+            const error = new Error('Could not find user.');
+            error.statusCode = 404;
+            throw error;
+          }
+        res.json({status:user.status})  
+    }).catch(err=>{
+        if(!err.statusCode){
+            err.statusCode = 500
+        }
+        next(err)
+    })
+}
 exports.createPost = (req,res,next) => {
    
     const errors = validationResult(req)
