@@ -8,7 +8,7 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
 const multer = require('multer');
-
+const uuid = require("uuidv4")
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
@@ -29,7 +29,7 @@ const csrfProtection = csrf();
 //   },
 //   filename: (req, file, cb) => {
 //     console.log("file",req.body)
-//     cb(null, new Date().toISOString() + '-' + file.originalname);
+//     cb(null, uuid() + file.originalname);
 //   }
 // });
 
@@ -54,7 +54,7 @@ const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(
-//   multer({ storage: fileStorage }).any()
+//   multer({ storage: fileStorage  }).any()
 // );
 
 // for more multer, use  uuid, its given in REST-api-and-upuntil-now
