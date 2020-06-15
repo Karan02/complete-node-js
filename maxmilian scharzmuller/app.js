@@ -5,7 +5,7 @@ const bodyParser = require("body-parser")
 const mongoose = require("mongoose")
 const feedRoutes = require("./routes/feed")
 const authRoutes = require("./routes/auth")
-
+// const init = require("./socket")
 const multer = require("multer")
 const { uuid } = require('uuidv4')
 // app.use(bodyParser.urlencoded()) //x-www-forn-urlencoded <form>
@@ -55,7 +55,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/messages",config)
 .then((result)=>{
     console.log("Listening on 8080")
     const server = app.listen(8080)
-    const io = require("socket.io")(server)
+    const io = require("./socket").init(server)
     io.on("connection",socket =>{
         console.log("Client connected")
     })

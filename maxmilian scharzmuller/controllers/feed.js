@@ -5,13 +5,15 @@ const Post = require("../models/post")
 const post = require("../models/post")
 const { remove } = require("../models/post")
 const User = require("../models/user")
+const io = require('../socket');
+console.log(io,"io")
 exports.getPosts = async (req,res,next) => {
     // imageUrl = req.file.path.replace("\\","/");
     const currentPage = req.query.page || 1
     const perPage = 2
      try{
     const totalItems = await Post.find().countDocuments()
-    const posts = await Post.find().skip((currentPage-1)*perPage).limit(perPage)
+    const posts = await Post.find().skip((currentPage-1)*perPage).limit(perPage).populate("creator").sort({createdAt: -1})
     res.status(200).json({message:"Fetched posts successfully",posts:posts,totalItems:totalItems})
      }catch(err){
          if(!err.statusCode){
@@ -93,6 +95,14 @@ exports.createPost =async (req,res,next) => {
         //mongoose will handle extracting id from "post"
     await user.posts.push(post)
     await user.save()
+    
+    console.log(io,"io")
+    io.getIO().emit('posts', {
+        action: 'create',
+         post:{...post._doc, creator: { _id: req.userId, name: user.name } }
+      });
+
+
     res.status(201).json({
             message:"Post created Successfully",
             post:post,
@@ -127,14 +137,14 @@ exports.updatePost = async (req, res, next) => {
       throw error;
     }
     try{
-    let post = Post.findById(postId)
+    let post = (await Post.findById(postId)).populate("creator")
        
         if (!post) {
           const error = new Error('Could not find post.');
           error.statusCode = 404;
           throw error;
         }
-        if(post.creator.toString() !== req.userId){
+        if(post.creator._id.toString() !== req.userId){
             const error = new Error("Not Authorized")
             error.statusCode = 403
             throw error
@@ -147,7 +157,7 @@ exports.updatePost = async (req, res, next) => {
         post.content = content;
         let result = await post.save();
        
-      
+        io.getIO().emit("posts",{action:"update",post:result})
         res.status(200).json({ message: 'Post updated!', post: result });
     }
       catch(err){
@@ -179,30 +189,35 @@ exports.getPost = async (req,res,next) =>{
 
 exports.deletePost =async (req,res,next) => {
     const postId = req.params.postId
-    let post = Post.findById(postId)
     try{
+    let post = await Post.findById(postId).populate("creator")
+
     if(!post){
             const error = new Error("Could not find post")
             error.statusCode = 404
             // throwing error will send it to catch block
             throw error
     }
-    if(post.creator.toString() !== req.userId){
+    console.log("post.creator",post.creator)
+    if(post.creator._id.toString() !== req.userId){
             const error = new Error("Not Authorized")
             error.statusCode = 403
             throw error
     }
         //check logged in user
     clearImage(post.imageUrl)
-    let result = Post.findByIdAndRemove(postId)
+    let result =await Post.findByIdAndRemove(postId)
      
-    let user = User.findById(req.userId)
+    let user = await User.findById(req.userId)
         
           
     //pull is a mongoose function
     user.posts.pull(postId)
-    await user.save() 
-            
+    await user.save()    
+    io.getIO().emit("posts",{
+        action:"delete",
+        post:postId
+    })        
     res.status(200).json({message:"Post Deleted"})}
     catch(err){
         if(!err.statusCode){
@@ -213,7 +228,7 @@ exports.deletePost =async (req,res,next) => {
 }
 
 const clearImage = filePath =>{
-    filePath = path.join(__dirname,"..",filePath)
-   console.log(filePath)
-    fs.unlink(filePath,err=>console.log("error",err))
+    const filePathe = path.join(__dirname,"..",filePath)
+    
+      fs.unlink(filePathe,err=>console.log("error",err))
 } 
