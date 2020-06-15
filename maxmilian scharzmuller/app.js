@@ -12,6 +12,7 @@ const mongoose = require("mongoose")
 // const init = require("./socket")
 const multer = require("multer")
 const { uuid } = require('uuidv4')
+const { formatError } = require("graphql")
 // app.use(bodyParser.urlencoded()) //x-www-forn-urlencoded <form>
 app.use(bodyParser.json()) //application json
 const fileStorage= multer.diskStorage({
@@ -40,8 +41,12 @@ app.use((req,res,next)=>{
     res.setHeader("Access-Control-Allow-Origin","*")
     res.setHeader("Access-Control-Allow-Methods","OPTIONS,GET,POST,PUT,PATCH,DELETE")
     res.setHeader("Access-Control-Allow-Headers","Content-Type,Authorization")
+    if(req.method === "OPTIONS"){
+        return res.sendStatus(200)
+    }
     next()
 })
+
 // app.use("/feed",feedRoutes)
 // app.use("/auth",authRoutes)
 const config = {
@@ -50,7 +55,21 @@ const config = {
 }
 app.use("/graphql",graphqlHttp({
     schema:graphqlSchema,
-    rootValue:graphqlResolver
+    rootValue:graphqlResolver,
+    graphiql: true, // allow to play with graphql api on browser
+    formatError(err){
+       if(!err.originalError){
+           return err
+       } 
+       const data = err.originalError.data
+       const message = err.message || "An error occurred"
+       const code = err.originalError.code || 500
+       return {
+           message:message,
+           status:code,
+           data:data
+       }
+    }
 }))
 app.use((err,req,res,next)=>{
    
@@ -59,7 +78,7 @@ app.use((err,req,res,next)=>{
     const data = err.data
     res.status(status).json({message:message,data:data})
 })
-mongoose.connect("mongodb://127.0.0.1:27017/messages",config)
+mongoose.connect("mongodb://127.0.0.1:27017/localhost",config)
 .then((result)=>{
     console.log("Listening on 8080")
     const server = app.listen(8080)
