@@ -29,7 +29,7 @@ class SinglePost extends Component {
         this.setState({
           title: resData.post.title,
           author: resData.post.creator.name,
-          image: 'http://localhost:8080/' + (resData.post.imageUrl.replace("\\","/")),
+          image: 'http://localhost:8080/' + resData.post.imageUrl,
           date: new Date(resData.post.createdAt).toLocaleDateString('en-US'),
           content: resData.post.content
         });
@@ -40,7 +40,6 @@ class SinglePost extends Component {
   }
 
   render() {
-    console.log(this.state.image)
     return (
       <section className="single-post">
         <h1>{this.state.title}</h1>
