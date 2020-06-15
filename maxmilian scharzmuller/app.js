@@ -1,10 +1,14 @@
 const path = require("path")
 const express = require("express")
+const graphqlHttp = require("express-graphql")
+const graphqlSchema = require("./graphql/schema")
+const graphqlResolver = require("./graphql/resolvers")
+
 const app = express()
 const bodyParser = require("body-parser")
 const mongoose = require("mongoose")
-const feedRoutes = require("./routes/feed")
-const authRoutes = require("./routes/auth")
+// const feedRoutes = require("./routes/feed")
+// const authRoutes = require("./routes/auth")
 // const init = require("./socket")
 const multer = require("multer")
 const { uuid } = require('uuidv4')
@@ -38,12 +42,16 @@ app.use((req,res,next)=>{
     res.setHeader("Access-Control-Allow-Headers","Content-Type,Authorization")
     next()
 })
-app.use("/feed",feedRoutes)
-app.use("/auth",authRoutes)
+// app.use("/feed",feedRoutes)
+// app.use("/auth",authRoutes)
 const config = {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }
+app.use("/graphql",graphqlHttp({
+    schema:graphqlSchema,
+    rootValue:graphqlResolver
+}))
 app.use((err,req,res,next)=>{
    
     const status = err.statusCode || 500
@@ -55,10 +63,10 @@ mongoose.connect("mongodb://127.0.0.1:27017/messages",config)
 .then((result)=>{
     console.log("Listening on 8080")
     const server = app.listen(8080)
-    const io = require("./socket").init(server)
-    io.on("connection",socket =>{
-        console.log("Client connected")
-    })
+    // const io = require("./socket").init(server)
+    // io.on("connection",socket =>{
+    //     console.log("Client connected")
+    // })
 }).catch(err=> console.log(err))
 
 

@@ -198,7 +198,7 @@ exports.deletePost =async (req,res,next) => {
             // throwing error will send it to catch block
             throw error
     }
-    console.log("post.creator",post.creator)
+    
     if(post.creator._id.toString() !== req.userId){
             const error = new Error("Not Authorized")
             error.statusCode = 403
