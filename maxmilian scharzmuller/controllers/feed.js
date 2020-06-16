@@ -5,8 +5,8 @@ const Post = require("../models/post")
 const post = require("../models/post")
 const { remove } = require("../models/post")
 const User = require("../models/user")
-const io = require('../socket');
-console.log(io,"io")
+// const io = require('../socket');
+// console.log(io,"io")
 exports.getPosts = async (req,res,next) => {
     // imageUrl = req.file.path.replace("\\","/");
     const currentPage = req.query.page || 1
