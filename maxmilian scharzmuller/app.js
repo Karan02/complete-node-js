@@ -73,8 +73,8 @@ app.put("/post-image",(req,res,next)=>{
         clearImage(req.body.oldPath)
     }
      
-
-    return res.status(201).json({message:"File stored",filePath:req.file.path})
+    // console.log("path",req.file.path.replace("\\","/"))
+    return res.status(201).json({message:"File stored",filePath:req.file.path.replace("\\","/")})
 })
 
 app.use("/graphql",graphqlHttp({
@@ -88,7 +88,7 @@ app.use("/graphql",graphqlHttp({
 
            return err
        } 
-       console.log("here")
+    //    console.log("here")
        const data = err.originalError.data
        const message = err.message || "An error occurred"
        const code = err.originalError.code || 500
@@ -100,7 +100,7 @@ app.use("/graphql",graphqlHttp({
     }
 }))
 app.use((err,req,res,next)=>{
-   console.log("here2")
+//    console.log("here2")
     const status = err.statusCode || 500
     const message = err.message
     const data = err.data
