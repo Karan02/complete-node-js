@@ -1,3 +1,4 @@
+// where we compare , we use chai and we use mocha to test entire system
 const expect = require("chai").expect
 const sinon = require("sinon")
 const User = require("../models/user")
